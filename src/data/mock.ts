@@ -1,4 +1,4 @@
-import type { ClinicState } from "../types";
+import type { ClinicState, DoctorPrescription } from "../types";
 import { generateReferenceNumber } from "../utils";
 
 export const mockClinicState: ClinicState = {
@@ -57,6 +57,7 @@ export const mockClinicState: ClinicState = {
       consultationDuration: 30,
       isActive: true,
       displayOrder: 1,
+      loginEmail: "dr.ward@medbookpro.demo",
       availableSlots: {
         Monday: ["09:00", "09:35", "10:10", "11:00", "14:00", "14:35"],
         Wednesday: ["09:00", "09:35", "10:10", "11:00", "14:00", "14:35"],
@@ -76,6 +77,7 @@ export const mockClinicState: ClinicState = {
       consultationDuration: 20,
       isActive: true,
       displayOrder: 2,
+      loginEmail: "dr.lee@medbookpro.demo",
       availableSlots: {
         Tuesday: ["10:00", "10:25", "10:50", "11:15", "15:00", "15:25", "15:50"],
         Thursday: ["10:00", "10:25", "10:50", "11:15", "15:00", "15:25", "15:50"],
@@ -95,6 +97,7 @@ export const mockClinicState: ClinicState = {
       consultationDuration: 40,
       isActive: true,
       displayOrder: 3,
+      loginEmail: "prof.menon@medbookpro.demo",
       availableSlots: {
         Monday: ["08:30", "09:15", "10:00", "11:30", "13:30"],
         Tuesday: ["08:30", "09:15", "10:00", "11:30", "13:30"],
@@ -276,4 +279,33 @@ export const mockClinicState: ClinicState = {
       createdAt: "2026-03-28T12:00:00.000Z",
     },
   ],
+  doctorPrescriptions: [
+    {
+      id: "dp-1",
+      patientId: "patient-1",
+      doctorId: "doctor-3",
+      clinicId: "clinic-001",
+      appointmentId: "appointment-3",
+      diagnosis: "Metabolic syndrome — early stage",
+      items: [
+        { medication: "Metformin", dosage: "500 mg", frequency: "Twice daily", duration: "3 months", instructions: "Take with meals" },
+        { medication: "Omega-3 Fish Oil", dosage: "1000 mg", frequency: "Once daily", duration: "6 months" },
+      ],
+      notes: "Patient advised to follow Mediterranean diet and 30 min moderate exercise daily. Follow-up in 6 weeks.",
+      createdAt: "2026-03-28T12:30:00.000Z",
+    },
+    {
+      id: "dp-2",
+      patientId: "patient-1",
+      doctorId: "doctor-1",
+      clinicId: "clinic-001",
+      appointmentId: "appointment-1",
+      diagnosis: "Hypertension — Stage 1",
+      items: [
+        { medication: "Amlodipine", dosage: "5 mg", frequency: "Once daily", duration: "Ongoing", instructions: "Take in the morning" },
+      ],
+      notes: "Monitor BP weekly. Return if systolic exceeds 160 mmHg.",
+      createdAt: "2026-03-26T09:45:00.000Z",
+    },
+  ] satisfies DoctorPrescription[],
 };

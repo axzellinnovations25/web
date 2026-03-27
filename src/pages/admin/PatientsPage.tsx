@@ -1,5 +1,5 @@
-import { FileText } from "lucide-react";
-import { useState } from "react";
+import { FileText, Upload, X } from "lucide-react";
+import { useRef, useState } from "react";
 import { useClinic } from "../../context/ClinicContext";
 import { formatDate } from "../../utils";
 import { Button } from "../../components/ui/Button";
@@ -7,18 +7,95 @@ import { Textarea } from "../../components/ui/Input";
 import { AdminPageShell, DetailList, EmptyBlock, Panel, StatusPill, Toolbar } from "./shared";
 
 export function PatientsPage() {
-  const { patients, appointments, prescriptions, savePatientNote } = useClinic();
+  const { patients, appointments, prescriptions, savePatientNote, addPrescription } = useClinic();
   const [selectedId, setSelectedId] = useState<string | undefined>(patients[0]?.id);
   const patient = patients.find((item) => item.id === selectedId) ?? patients[0];
   const history = appointments.filter((appointment) => appointment.patientId === patient?.id);
   const files = prescriptions.filter((item) => item.patientId === patient?.id);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [uploadNote, setUploadNote] = useState("");
+
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (file) {
+      setPendingFile(file);
+      setUploadNote("");
+    }
+    event.target.value = "";
+  }
+
+  function handleConfirmUpload() {
+    if (!pendingFile || !patient) return;
+    const latestAppointment = history[0];
+    addPrescription({
+      id: `prescription-${crypto.randomUUID()}`,
+      appointmentId: latestAppointment?.id ?? "",
+      patientId: patient.id,
+      doctorId: latestAppointment?.doctorId ?? "",
+      fileUrl: URL.createObjectURL(pendingFile),
+      fileName: pendingFile.name,
+      fileType: pendingFile.type,
+      notes: uploadNote.trim() || undefined,
+      createdAt: new Date().toISOString(),
+    });
+    setPendingFile(null);
+    setUploadNote("");
+  }
+
+  function handleCancelUpload() {
+    setPendingFile(null);
+    setUploadNote("");
+  }
+
   return (
+    <>
+      {pendingFile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+            <div className="flex items-start justify-between gap-4">
+              <h2 className="text-base font-bold text-slate-900">Upload prescription</h2>
+              <button onClick={handleCancelUpload} className="text-slate-400 hover:text-slate-600">
+                <X className="size-5" />
+              </button>
+            </div>
+            <div className="mt-4 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <FileText className="size-5 shrink-0 text-accent" />
+              <div className="min-w-0">
+                <div className="truncate text-sm font-semibold text-slate-900">{pendingFile.name}</div>
+                <div className="text-xs text-slate-400">{(pendingFile.size / 1024).toFixed(1)} KB</div>
+              </div>
+            </div>
+            <div className="mt-4">
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Note (optional)</label>
+              <Textarea
+                rows={3}
+                value={uploadNote}
+                onChange={(e) => setUploadNote(e.target.value)}
+                placeholder="Add a note about this file..."
+              />
+            </div>
+            <div className="mt-5 flex justify-end gap-2">
+              <Button variant="secondary" onClick={handleCancelUpload}>Cancel</Button>
+              <Button onClick={handleConfirmUpload}><Upload className="mr-2 size-4" />Upload</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
     <AdminPageShell
       eyebrow="Patients"
       title="Patient records and follow-up history"
       description="A central workspace for patient identity, visit history, record notes, and attached prescription/report files."
     >
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+        className="hidden"
+        onChange={handleFileChange}
+      />
       <div className="grid gap-6 xl:grid-cols-[330px_1fr]">
         <Panel title="Patient directory" description="Search and select a patient record to inspect visit history.">
           <Toolbar searchPlaceholder="Search patients by name, phone, or email" />
@@ -45,7 +122,7 @@ export function PatientsPage() {
             <Panel
               title={patient.name}
               description="Primary record summary with direct access to notes and contact details."
-              action={<Button variant="secondary"><FileText className="mr-2 size-4" />Upload prescription</Button>}
+              action={<Button variant="secondary" onClick={() => fileInputRef.current?.click()}><FileText className="mr-2 size-4" />Upload prescription</Button>}
             >
               <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
                 <div className="space-y-4">
@@ -102,5 +179,6 @@ export function PatientsPage() {
         ) : null}
       </div>
     </AdminPageShell>
+    </>
   );
 }

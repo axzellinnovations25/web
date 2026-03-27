@@ -11,6 +11,7 @@ import type {
   ContactMessageDraft,
   ContactMessageStatus,
   Doctor,
+  DoctorPrescription,
   Patient,
   Prescription,
   Review,
@@ -31,6 +32,7 @@ interface ClinicContextValue extends ClinicState {
   toggleReviewFeatured: (reviewId: string) => void;
   savePatientNote: (patientId: string, notes: string) => void;
   addPrescription: (payload: Prescription) => void;
+  addDoctorPrescription: (payload: DoctorPrescription) => void;
 }
 
 const ClinicContext = createContext<ClinicContextValue | undefined>(undefined);
@@ -232,6 +234,9 @@ export function ClinicProvider({ children }: { children: ReactNode }) {
       },
       addPrescription(payload) {
         setState((current) => ({ ...current, prescriptions: [payload, ...current.prescriptions] }));
+      },
+      addDoctorPrescription(payload) {
+        setState((current) => ({ ...current, doctorPrescriptions: [payload, ...current.doctorPrescriptions] }));
       },
     }),
     [state],

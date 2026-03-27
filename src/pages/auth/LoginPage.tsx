@@ -14,13 +14,13 @@ const features = [
 ];
 
 export function LoginPage() {
-  const { signIn, isAuthenticated } = useAuth();
+  const { signIn, isAuthenticated, userRole } = useAuth();
   const [email, setEmail] = useState("admin@medbookpro.demo");
   const [password, setPassword] = useState("password");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  if (isAuthenticated) return <Navigate to="/admin" replace />;
+  if (isAuthenticated) return <Navigate to={userRole === "doctor" ? "/doctor" : "/admin"} replace />;
 
   return (
     <div className="flex min-h-screen">

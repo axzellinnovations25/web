@@ -54,6 +54,7 @@ export interface Doctor {
   consultationDuration: number;
   isActive: boolean;
   displayOrder: number;
+  loginEmail?: string;
 }
 
 export interface Service {
@@ -144,6 +145,26 @@ export interface Prescription {
   createdAt: string;
 }
 
+export interface DoctorPrescriptionItem {
+  medication: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  instructions?: string;
+}
+
+export interface DoctorPrescription {
+  id: string;
+  patientId: string;
+  doctorId: string;
+  clinicId: string;
+  appointmentId?: string;
+  diagnosis: string;
+  items: DoctorPrescriptionItem[];
+  notes?: string;
+  createdAt: string;
+}
+
 export interface BookingDraft {
   serviceId?: string;
   doctorId?: string;
@@ -164,4 +185,5 @@ export interface ClinicState {
   reviews: Review[];
   contactMessages: ContactMessage[];
   prescriptions: Prescription[];
+  doctorPrescriptions: DoctorPrescription[];
 }

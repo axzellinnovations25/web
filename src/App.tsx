@@ -1,8 +1,10 @@
 import { lazy, Suspense } from "react";
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { AdminLayout } from "./components/layout/AdminLayout";
+import { DoctorLayout } from "./components/layout/DoctorLayout";
 import { Navbar } from "./components/layout/Navbar";
 import { useAuth } from "./context/AuthContext";
+import { useClinic } from "./context/ClinicContext";
 
 const LandingPage = lazy(() => import("./pages/public/LandingPage").then((module) => ({ default: module.LandingPage })));
 const AboutPage = lazy(() => import("./pages/public/AboutPage").then((module) => ({ default: module.AboutPage })));
@@ -28,6 +30,12 @@ const ReviewsPage = lazy(() => import("./pages/admin/ReviewsPage").then((module)
 const AnalyticsPage = lazy(() => import("./pages/admin/AnalyticsPage").then((module) => ({ default: module.AnalyticsPage })));
 const QRPage = lazy(() => import("./pages/admin/QRPage").then((module) => ({ default: module.QRPage })));
 const SettingsPage = lazy(() => import("./pages/admin/SettingsPage").then((module) => ({ default: module.SettingsPage })));
+
+// Doctor portal pages
+const DoctorDashboardPage = lazy(() => import("./pages/doctor/DoctorDashboardPage").then((m) => ({ default: m.DoctorDashboardPage })));
+const DoctorPatientsPage = lazy(() => import("./pages/doctor/DoctorPatientsPage").then((m) => ({ default: m.DoctorPatientsPage })));
+const DoctorPatientDetailPage = lazy(() => import("./pages/doctor/DoctorPatientDetailPage").then((m) => ({ default: m.DoctorPatientDetailPage })));
+const DoctorAppointmentsPage = lazy(() => import("./pages/doctor/DoctorAppointmentsPage").then((m) => ({ default: m.DoctorAppointmentsPage })));
 
 function PublicSkeleton() {
   return (
@@ -73,16 +81,36 @@ function PublicLayout() {
   );
 }
 
-function ProtectedRoute() {
-  const { isAuthenticated, loading } = useAuth();
+/** Admin-only protected route — redirects doctors to /doctor */
+function AdminRoute() {
+  const { isAuthenticated, loading, userRole } = useAuth();
   if (loading) return <div className="p-10">Loading...</div>;
   if (!isAuthenticated) return <Navigate to="/auth/login" replace />;
+  if (userRole === "doctor") return <Navigate to="/doctor" replace />;
   return (
     <AdminLayout>
       <Suspense fallback={<AdminSkeleton />}>
         <Outlet />
       </Suspense>
     </AdminLayout>
+  );
+}
+
+/** Doctor-only protected route — redirects admins to /admin */
+function DoctorRoute() {
+  const { isAuthenticated, loading, userRole, doctorId } = useAuth();
+  const { doctors } = useClinic();
+  if (loading) return <div className="p-10">Loading...</div>;
+  if (!isAuthenticated) return <Navigate to="/auth/login" replace />;
+  if (userRole !== "doctor") return <Navigate to="/admin" replace />;
+  const doctor = doctors.find((d) => d.id === doctorId);
+  const doctorName = doctor ? `${doctor.title} ${doctor.name}` : "Doctor";
+  return (
+    <DoctorLayout doctorName={doctorName}>
+      <Suspense fallback={<AdminSkeleton />}>
+        <Outlet />
+      </Suspense>
+    </DoctorLayout>
   );
 }
 
@@ -100,7 +128,7 @@ export default function App() {
         </Route>
         <Route path="/auth/login" element={<LoginPage />} />
         <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/admin" element={<ProtectedRoute />}>
+        <Route path="/admin" element={<AdminRoute />}>
           <Route index element={<DashboardPage />} />
           <Route path="appointments" element={<AppointmentsPage />} />
           <Route path="doctors" element={<DoctorsPage />} />
@@ -111,6 +139,12 @@ export default function App() {
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="qr" element={<QRPage />} />
           <Route path="settings" element={<SettingsPage />} />
+        </Route>
+        <Route path="/doctor" element={<DoctorRoute />}>
+          <Route index element={<DoctorDashboardPage />} />
+          <Route path="patients" element={<DoctorPatientsPage />} />
+          <Route path="patients/:id" element={<DoctorPatientDetailPage />} />
+          <Route path="appointments" element={<DoctorAppointmentsPage />} />
         </Route>
       </Routes>
     </Suspense>
