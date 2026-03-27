@@ -138,5 +138,38 @@ values
 )
 on conflict (id) do nothing;
 
+insert into public.contact_messages (
+  id,
+  clinic_id,
+  patient_name,
+  phone,
+  email,
+  subject,
+  message,
+  status
+)
+values
+(
+  '44444444-4444-4444-4444-444444444441',
+  '11111111-1111-1111-1111-111111111111',
+  'Ethan Parker',
+  '+1 (415) 555-0133',
+  'ethan@example.com',
+  'Cardiology consultation availability',
+  'I want to arrange a first consultation next week and would like to know which days are best for a new patient visit.',
+  'new'
+),
+(
+  '44444444-4444-4444-4444-444444444442',
+  '11111111-1111-1111-1111-111111111111',
+  'Sophia Kim',
+  '+1 (415) 555-0174',
+  'sophia@example.com',
+  'Insurance and pricing question',
+  'Please confirm whether executive wellness packages can be booked directly online and if pricing differs for follow-up visits.',
+  'read'
+)
+on conflict (id) do nothing;
+
 -- Set VITE_CLINIC_ID=11111111-1111-1111-1111-111111111111 in .env when you want
 -- the frontend to target this seeded clinic from live Supabase-backed queries.

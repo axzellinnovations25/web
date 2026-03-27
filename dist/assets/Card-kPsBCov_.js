@@ -1,0 +1,1 @@
+import{j as r,p as t}from"./index-CLehufYq.js";function o({children:s,className:a}){return r.jsx("div",{className:t("rounded-4xl bg-white p-6 shadow-soft ring-1 ring-slate-100",a),children:s})}export{o as C};

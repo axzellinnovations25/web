@@ -110,6 +110,28 @@ export interface Review {
   createdAt: string;
 }
 
+export type ContactMessageStatus = "new" | "read" | "resolved";
+
+export interface ContactMessage {
+  id: string;
+  clinicId: string;
+  patientName: string;
+  phone: string;
+  email?: string;
+  subject: string;
+  message: string;
+  status: ContactMessageStatus;
+  createdAt: string;
+}
+
+export interface ContactMessageDraft {
+  patientName: string;
+  phone: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
 export interface Prescription {
   id: string;
   appointmentId: string;
@@ -140,5 +162,6 @@ export interface ClinicState {
   patients: Patient[];
   appointments: Appointment[];
   reviews: Review[];
+  contactMessages: ContactMessage[];
   prescriptions: Prescription[];
 }

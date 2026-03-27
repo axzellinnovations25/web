@@ -12,7 +12,7 @@ export const mockClinicState: ClinicState = {
     logoUrl:
       "https://images.unsplash.com/photo-1579684453423-f84349ef60b0?auto=format&fit=crop&w=300&q=80",
     heroImageUrl:
-      "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?auto=format&fit=crop&w=1400&q=85",
     primaryColor: "#0f766e",
     secondaryColor: "#fb923c",
     fontFamily: "Manrope",
@@ -237,6 +237,30 @@ export const mockClinicState: ClinicState = {
       isApproved: false,
       isFeatured: false,
       createdAt: "2026-03-25T09:30:00.000Z",
+    },
+  ],
+  contactMessages: [
+    {
+      id: "message-1",
+      clinicId: "clinic-001",
+      patientName: "Ethan Parker",
+      phone: "+1 (415) 555-0133",
+      email: "ethan@example.com",
+      subject: "Cardiology consultation availability",
+      message: "I want to arrange a first consultation next week and would like to know which days are best for a new patient visit.",
+      status: "new",
+      createdAt: "2026-03-25T14:20:00.000Z",
+    },
+    {
+      id: "message-2",
+      clinicId: "clinic-001",
+      patientName: "Sophia Kim",
+      phone: "+1 (415) 555-0174",
+      email: "sophia@example.com",
+      subject: "Insurance and pricing question",
+      message: "Please confirm whether executive wellness packages can be booked directly online and if pricing differs for follow-up visits.",
+      status: "read",
+      createdAt: "2026-03-24T09:10:00.000Z",
     },
   ],
   prescriptions: [
